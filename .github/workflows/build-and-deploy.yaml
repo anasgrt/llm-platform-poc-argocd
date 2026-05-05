@@ -15,6 +15,31 @@ on:
       - 'deploy/base/**'
       - '.github/workflows/build-and-deploy.yaml'
   workflow_dispatch:
+    inputs:
+      overlay:
+        description: 'Target overlay to bump'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+      build_qwen3:
+        description: 'Build qwen3-server image'
+        type: boolean
+        default: true
+      build_embedding:
+        description: 'Build embedding-server image'
+        type: boolean
+        default: true
+      build_rag:
+        description: 'Build rag-app image'
+        type: boolean
+        default: true
+      build_ingestion:
+        description: 'Build ingestion image'
+        type: boolean
+        default: true
 
 permissions:
   contents: write   # commit the tag bump
@@ -44,6 +69,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push ${{ matrix.image }}
+        if: |
+          (matrix.image == 'qwen3-server' && inputs.build_qwen3) ||
+          (matrix.image == 'embedding-server' && inputs.build_embedding) ||
+          (matrix.image == 'rag-app' && inputs.build_rag) ||
+          (matrix.image == 'ingestion' && inputs.build_ingestion) ||
+          github.event_name == 'push'
         uses: docker/build-push-action@v6
         with:
           context: ./images/${{ matrix.image }}
@@ -69,22 +100,28 @@ jobs:
       - name: Install kustomize
         uses: imranismail/setup-kustomize@v2
 
-      - name: Bump image tags in dev overlay
-        working-directory: deploy/overlays/dev
+      - name: Bump image tags in ${{ inputs.overlay || 'dev' }} overlay
+        working-directory: deploy/overlays/${{ inputs.overlay || 'dev' }}
         run: |
           for img in qwen3-server embedding-server rag-app ingestion; do
-            kustomize edit set image \
-              "ghcr.io/${{ github.repository_owner }}/${img}=ghcr.io/${{ github.repository_owner }}/${img}:${{ github.sha }}"
+            if [ "${{ github.event_name }}" == "push" ] || \
+               ([ "$img" == "qwen3-server" ] && ${{ inputs.build_qwen3 }}) || \
+               ([ "$img" == "embedding-server" ] && ${{ inputs.build_embedding }}) || \
+               ([ "$img" == "rag-app" ] && ${{ inputs.build_rag }}) || \
+               ([ "$img" == "ingestion" ] && ${{ inputs.build_ingestion }}); then
+              kustomize edit set image \
+                "ghcr.io/${{ github.repository_owner }}/${img}=ghcr.io/${{ github.repository_owner }}/${img}:${{ github.sha }}"
+            fi
           done
 
       - name: Commit and push
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add deploy/overlays/dev/kustomization.yaml
+          git add deploy/overlays/${{ inputs.overlay || 'dev' }}/kustomization.yaml
           if git diff --cached --quiet; then
             echo "No tag changes to commit."
             exit 0
           fi
-          git commit -m "ci: bump dev images to ${{ github.sha }}"
+          git commit -m "ci: bump ${{ inputs.overlay || 'dev' }} images to ${{ github.sha }}"
           git push origin HEAD:main
