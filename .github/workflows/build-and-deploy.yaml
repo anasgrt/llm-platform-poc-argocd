@@ -125,4 +125,5 @@ jobs:
             exit 0
           fi
           git commit -m "ci: bump ${{ inputs.overlay || 'dev' }} images to ${{ github.sha }}"
+          git pull --rebase origin main
           git push origin HEAD:main
