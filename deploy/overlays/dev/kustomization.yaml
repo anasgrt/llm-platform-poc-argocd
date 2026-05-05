@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+# CI updates `newTag` on these via `kustomize edit set image`.
+# Initial value `main` is a placeholder before the first CI run.
+images:
+  - name: ghcr.io/anasgrt/qwen3-server
+    newTag: 7b63963b99789755f05e3a221fc528fd87b4e083
+  - name: ghcr.io/anasgrt/embedding-server
+    newTag: 7b63963b99789755f05e3a221fc528fd87b4e083
+  - name: ghcr.io/anasgrt/rag-app
+    newTag: 7b63963b99789755f05e3a221fc528fd87b4e083
+  - name: ghcr.io/anasgrt/ingestion
+    newTag: 7b63963b99789755f05e3a221fc528fd87b4e083

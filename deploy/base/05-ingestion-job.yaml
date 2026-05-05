@@ -1,0 +1,43 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: log-ingestion
+  namespace: ai-platform
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: ingest
+          image: ghcr.io/anasgrt/ingestion
+          env:
+            - name: EMBED_URL
+              value: "http://embedding-server:8080"
+            - name: QDRANT_URL
+              value: "http://qdrant:6333"
+            - name: COLLECTION
+              value: "logs"
+            - name: LOGS_DIR
+              value: "/logs"
+            - name: CHUNK_SIZE
+              value: "15"
+          volumeMounts:
+            - name: logs
+              mountPath: /logs
+              readOnly: true
+          resources:
+            requests:
+              memory: 512Mi  # Embedding batches need memory
+              cpu: 500m
+            limits:
+              memory: 1Gi
+              cpu: "1"
+      volumes:
+        - name: logs
+          configMap:
+            name: sample-logs

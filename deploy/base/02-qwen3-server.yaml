@@ -1,0 +1,90 @@
+# Qwen3 4B inference server — llama-cpp-python with OpenAI-compatible API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen3-server
+  namespace: ai-platform
+  labels:
+    app: qwen3-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: qwen3-server
+  template:
+    metadata:
+      labels:
+        app: qwen3-server
+    spec:
+      containers:
+        - name: qwen3
+          # Image tag is set by the dev/prod kustomize overlay (CI bumps it).
+          image: ghcr.io/anasgrt/qwen3-server
+          # mmap=False loads weights into RAM once. The model lives on a
+          # VirtualBox synced /vagrant mount, so on-demand paging would slow
+          # every inference. n_threads=2 leaves CPU headroom for k3s,
+          # monitoring, and the RAG workload on the 4-core data plane.
+          args:
+            - "--model"
+            - "/models/Qwen3-4B-Q4_K_M.gguf"
+            - "--use_mmap"
+            - "False"
+            - "--use_mlock"
+            - "False"
+            - "--n_threads"
+            - "4"
+            - "--n_threads_batch"
+            - "4"
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+          resources:
+            requests:
+              memory: 4Gi
+              cpu: "2"
+            limits:
+              memory: 6Gi
+              cpu: "4"
+          # Startup probe verifies the OpenAI API is actually serving — needs HTTP.
+          # Generous timeout because model load + first warmup is slow on CPU.
+          startupProbe:
+            httpGet:
+              path: /v1/models
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 60
+            timeoutSeconds: 30
+          # Readiness uses TCP — once startup passes, the server is up.
+          # HTTP probes get starved by inference threads (4 CPU pinned at 100%)
+          # and trip the failure threshold, dropping the pod from the Service.
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 6
+      volumes:
+        - name: models
+          hostPath:
+            path: /vagrant/prebuilt-models
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen3-server
+  namespace: ai-platform
+spec:
+  selector:
+    app: qwen3-server
+  ports:
+    - name: http
+      port: 8080

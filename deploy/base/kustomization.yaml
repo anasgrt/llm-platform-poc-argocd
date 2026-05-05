@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Resources span ai-platform and monitoring namespaces, so we don't set a
+# top-level namespace here. Each manifest declares its own namespace, and the
+# sample-logs ConfigMap is generated directly into ai-platform.
+resources:
+  - 00-namespace.yaml
+  - 01-qdrant.yaml
+  - 02-qwen3-server.yaml
+  - 03-embedding-server.yaml
+  - 04-rag-app.yaml
+  - 05-ingestion-job.yaml
+  - 06-ingress.yaml
+  - 07-monitoring.yaml
+  - 08-fluent-bit.yaml
+  - 09-log-retention.yaml
+
+configMapGenerator:
+  - name: sample-logs
+    namespace: ai-platform
+    files:
+      - sample-logs/infrastructure.log
+      - sample-logs/kubernetes-pods.log
+      - sample-logs/nginx-access.log
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+# In-house images. Overlays set `newTag` to the git SHA pushed by CI.
+# Listing them here lets `kustomize edit set image` resolve cleanly.
+images:
+  - name: ghcr.io/anasgrt/qwen3-server
+  - name: ghcr.io/anasgrt/embedding-server
+  - name: ghcr.io/anasgrt/rag-app
+  - name: ghcr.io/anasgrt/ingestion

@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: embedding-server
+  namespace: ai-platform
+  labels:
+    app: embedding-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: embedding-server
+  template:
+    metadata:
+      labels:
+        app: embedding-server
+    spec:
+      containers:
+        - name: embeddings
+          image: ghcr.io/anasgrt/embedding-server
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: EMBED_MODEL
+              value: "/models/all-MiniLM-L6-v2"
+            - name: MODEL_CACHE
+              value: "/models"
+          volumeMounts:
+            - name: cache
+              mountPath: /models
+              readOnly: true
+          resources:
+            requests:
+              memory: 1Gi   # Model + batch encoding
+              cpu: "1"
+            limits:
+              memory: 2Gi   # Headroom for large batches
+              cpu: "2"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 18
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+      volumes:
+        - name: cache
+          hostPath:
+            path: /vagrant/prebuilt-models
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: embedding-server
+  namespace: ai-platform
+spec:
+  selector:
+    app: embedding-server
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

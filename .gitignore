@@ -1,0 +1,68 @@
+# macOS and editor state
+.DS_Store
+.AppleDouble
+.LSOverride
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+data_id_ed25519
+data_id_ed25519.pub
+join-info.sh
+
+# Vagrant, VirtualBox, and local cluster state
+.vagrant/
+*.box
+*.vdi
+*.vmdk
+*.vbox
+*.vbox-prev
+kubeconfig*
+*.kubeconfig
+k3s.yaml
+
+# Generated model and image artifacts
+prebuilt-images/
+prebuilt-models/
+*.tar
+*.tar.gz
+*.tgz
+
+# Temporary files and generated exports
+*.bak
+*.tmp
+*.temp
+README.pdf
+
+# Runtime logs outside checked-in samples
+*.log
+!sample-logs/
+!sample-logs/*.log
+!deploy/base/sample-logs/
+!deploy/base/sample-logs/*.log

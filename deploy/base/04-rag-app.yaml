@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-analysis-app
+  namespace: ai-platform
+  labels:
+    app: log-analysis-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-analysis-app
+  template:
+    metadata:
+      labels:
+        app: log-analysis-app
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/anasgrt/rag-app
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: QWEN3_URL
+              value: "http://qwen3-server:8080"
+            - name: EMBED_URL
+              value: "http://embedding-server:8080"
+            - name: QDRANT_URL
+              value: "http://qdrant:6333"
+            - name: PROMETHEUS_URL
+              value: "http://prometheus.monitoring.svc.cluster.local:9090"
+            - name: METRICS_NAMESPACE
+              value: "ai-platform,monitoring"
+            - name: COLLECTION
+              value: "logs"
+            - name: TOP_K
+              value: "6"
+            - name: MAX_CONTEXT_CHARS
+              value: "1000"
+            - name: MAX_TOKENS
+              value: "300"
+            - name: QWEN3_TIMEOUT
+              value: "300"
+            - name: USE_LLM
+              value: "true"
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 512Mi
+              cpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: log-analysis-app
+  namespace: ai-platform
+spec:
+  type: ClusterIP
+  selector:
+    app: log-analysis-app
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000

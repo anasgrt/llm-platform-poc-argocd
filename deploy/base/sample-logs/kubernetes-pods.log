@@ -1,0 +1,46 @@
+2026-04-15T02:14:01Z INFO Starting artifactory-primary-0 container in namespace kua-jfrog
+2026-04-15T02:14:02Z INFO Liveness probe configured: /api/system/ping interval=30s timeout=5s
+2026-04-15T02:14:03Z INFO Connecting to PostgreSQL at postgresql-primary.kua-jfrog.svc:5432
+2026-04-15T02:14:03Z INFO Database connection established successfully
+2026-04-15T02:14:08Z INFO Artifactory node started, version 7.98.12
+2026-04-15T03:12:45Z WARN High memory usage detected: 7.2Gi / 8Gi (90%) in pod artifactory-primary-0
+2026-04-15T03:12:46Z WARN GC overhead: 42% of CPU time spent in garbage collection
+2026-04-15T03:13:01Z ERROR java.lang.OutOfMemoryError: Java heap space
+2026-04-15T03:13:01Z ERROR   at org.jfrog.storage.binstore.services.BinaryProviderHelper.fetchStream(BinaryProviderHelper.java:128)
+2026-04-15T03:13:01Z ERROR   at org.jfrog.storage.binstore.services.FileBinaryProvider.getBinary(FileBinaryProvider.java:95)
+2026-04-15T03:13:02Z FATAL Pod artifactory-primary-0 OOMKilled — container exceeded memory limit 8Gi
+2026-04-15T03:13:02Z INFO Container restarting (attempt 1/5) with backoff 10s
+2026-04-15T03:13:15Z INFO Starting artifactory-primary-0 container in namespace kua-jfrog
+2026-04-15T03:13:20Z INFO Connecting to PostgreSQL at postgresql-primary.kua-jfrog.svc:5432
+2026-04-15T03:13:20Z INFO Database connection established successfully
+2026-04-15T03:13:28Z INFO Artifactory node started, version 7.98.12
+2026-04-15T03:14:10Z WARN NFS mount /var/opt/jfrog/artifactory slow: read latency 850ms (threshold: 200ms)
+2026-04-15T03:14:11Z WARN NFS mount /var/opt/jfrog/artifactory slow: read latency 1200ms (threshold: 200ms)
+2026-04-15T03:14:12Z ERROR NFS mount unresponsive: /var/opt/jfrog/artifactory — stale file handle
+2026-04-15T03:14:13Z ERROR Liveness probe failed: connection refused on /api/system/ping
+2026-04-15T03:14:14Z ERROR Liveness probe failed: connection refused on /api/system/ping
+2026-04-15T03:14:15Z ERROR Liveness probe failed: connection refused on /api/system/ping
+2026-04-15T03:14:16Z FATAL Pod artifactory-primary-0 restarting due to failed liveness probe (3/3 failures)
+2026-04-15T03:14:20Z INFO Container restarting (attempt 2/5) with backoff 20s
+2026-04-15T03:15:00Z INFO Starting artifactory-primary-0 container in namespace kua-jfrog
+2026-04-15T03:15:05Z ERROR ImagePullBackOff for kua-nx-remote-cache-server: failed to pull image jfrog.apps.key.prd.keylanehosting.net/docker/nginx:1.27 — connection refused
+2026-04-15T03:15:06Z WARN Artifactory service unavailable — dependent pods cannot pull images from internal registry
+2026-04-15T03:15:10Z INFO NFS mount recovered: /var/opt/jfrog/artifactory latency 45ms
+2026-04-15T03:15:15Z INFO Connecting to PostgreSQL at postgresql-primary.kua-jfrog.svc:5432
+2026-04-15T03:15:15Z INFO Database connection established successfully
+2026-04-15T03:15:25Z INFO Artifactory node started, version 7.98.12
+2026-04-15T03:15:26Z INFO All health checks passing
+2026-04-15T03:16:00Z INFO kua-nx-remote-cache-server image pull succeeded after Artifactory recovery
+2026-04-15T04:00:00Z INFO Scheduled backup CronJob artifactory-backup started
+2026-04-15T04:00:05Z INFO Backup target: PVC artifactory-backup-pvc (100Gi)
+2026-04-15T04:25:30Z INFO Backup completed: 49.5Gi written in 25m30s
+2026-04-15T06:30:00Z WARN Certificate expiry warning: TLS cert for jfrog.apps.key.prd.keylanehosting.net expires in 29 days
+2026-04-15T08:00:01Z INFO xray-server-0 started in namespace kua-jfrog
+2026-04-15T08:00:05Z INFO Xray connecting to PostgreSQL at xray-postgresql-primary.kua-jfrog.svc:5432
+2026-04-15T08:00:06Z ERROR SQLSTATE 53100: could not resize shared memory segment — no space left on device (/dev/shm)
+2026-04-15T08:00:06Z ERROR Xray Packages page returning HTTP 500 — query optimizer stats missing
+2026-04-15T08:00:07Z WARN xray-server-0 readiness probe failing: HTTP 500 on /api/v1/system/ping
+2026-04-15T08:01:00Z INFO Running vacuumdb --all --analyze-in-stages on xray database
+2026-04-15T08:05:30Z INFO vacuumdb completed successfully — optimizer stats refreshed
+2026-04-15T08:05:35Z INFO xray-server-0 readiness probe passing
+2026-04-15T08:05:36Z INFO Xray Packages page returning HTTP 200

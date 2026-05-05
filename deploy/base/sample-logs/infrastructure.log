@@ -1,0 +1,39 @@
+2026-04-15T03:10:00Z INFO prdkuanfsl42 pacemaker: Cluster health check OK — 11 NFS resources active
+2026-04-15T03:10:30Z INFO prdkuanfsl42 drbd: r0 role:Primary/Secondary ds:UpToDate/UpToDate
+2026-04-15T03:11:00Z WARN prdkuanfsl42 pacemaker: Node prdkuanfsl42 entering standby mode (manual trigger)
+2026-04-15T03:11:01Z WARN prdkuanfsl42 pacemaker: Migrating 11 NFS resources away from prdkuanfsl42
+2026-04-15T03:11:02Z ERROR prdkuanfsl43 pacemaker: Cannot acquire resources — location constraint score=-INFINITY blocking all resources on prdkuanfsl43
+2026-04-15T03:11:03Z ERROR prdkuanfsl43 pacemaker: Resource nfs-ip-artifactory FAILED to start on prdkuanfsl43
+2026-04-15T03:11:03Z ERROR prdkuanfsl43 pacemaker: Resource nfs-ip-bitbucket FAILED to start on prdkuanfsl43
+2026-04-15T03:11:03Z ERROR prdkuanfsl43 pacemaker: Resource nfs-ip-jira FAILED to start on prdkuanfsl43
+2026-04-15T03:11:03Z ERROR prdkuanfsl43 pacemaker: Resource nfs-ip-confluence FAILED to start on prdkuanfsl43
+2026-04-15T03:11:04Z FATAL prdkuanfsl43 pacemaker: 11 NFS resources now STOPPED — no eligible node available
+2026-04-15T03:11:04Z ERROR prdkuanfsl42 drbd: r0 connection to prdkuanfsl43 lost — ds:UpToDate/DUnknown
+2026-04-15T03:11:05Z WARN prdkuanfsl43 drbd: r0 role:Secondary ds:UpToDate/UpToDate (not promoted to Primary)
+2026-04-15T03:11:10Z ERROR kua-jfrog artifactory-primary-0: NFS mount /var/opt/jfrog/artifactory: Stale file handle
+2026-04-15T03:11:10Z ERROR kua-jfrog xray-server-0: NFS mount /var/opt/jfrog/xray: Input/output error
+2026-04-15T03:11:11Z ERROR atlassian jira-node-0: NFS mount /var/atlassian/application-data/jira: Stale file handle
+2026-04-15T03:11:11Z ERROR atlassian confluence-node-0: NFS mount /var/atlassian/application-data/confluence: Stale file handle
+2026-04-15T03:11:12Z ERROR atlassian bitbucket-node-0: NFS mount /var/atlassian/application-data/bitbucket: Stale file handle
+2026-04-15T03:12:00Z INFO operator: Running pcs resource cleanup on prdkuanfsl43
+2026-04-15T03:12:01Z INFO prdkuanfsl43 pacemaker: Resource cleanup initiated — clearing failure counts
+2026-04-15T03:12:05Z INFO operator: Running pcs node unstandby prdkuanfsl42
+2026-04-15T03:12:06Z INFO prdkuanfsl42 pacemaker: Node prdkuanfsl42 leaving standby mode
+2026-04-15T03:12:07Z INFO prdkuanfsl42 pacemaker: Starting resource nfs-ip-artifactory on prdkuanfsl42
+2026-04-15T03:12:08Z INFO prdkuanfsl42 pacemaker: Starting resource nfs-ip-bitbucket on prdkuanfsl42
+2026-04-15T03:12:09Z INFO prdkuanfsl42 pacemaker: Starting resource nfs-ip-jira on prdkuanfsl42
+2026-04-15T03:12:10Z INFO prdkuanfsl42 pacemaker: Starting resource nfs-ip-confluence on prdkuanfsl42
+2026-04-15T03:12:15Z INFO prdkuanfsl42 pacemaker: All 11 NFS resources now active on prdkuanfsl42
+2026-04-15T03:12:16Z INFO prdkuanfsl42 drbd: r0 role:Primary/Secondary ds:UpToDate/UpToDate (sync restored)
+2026-04-15T03:12:30Z INFO kua-jfrog artifactory-primary-0: NFS mount recovered — read latency 45ms
+2026-04-15T03:12:35Z INFO atlassian jira-node-0: NFS mount recovered
+2026-04-15T03:12:36Z INFO atlassian confluence-node-0: NFS mount recovered
+2026-04-15T03:12:37Z INFO atlassian bitbucket-node-0: NFS mount recovered
+2026-04-15T03:15:00Z WARN prdkuajirl61 yum: Transaction check error: installing package linux-firmware requires 612MB on /usr partition (5GB total, 4.2GB used)
+2026-04-15T03:15:01Z ERROR prdkuajirl61 yum: Error: Insufficient space in /usr to install linux-firmware-20260301
+2026-04-15T03:15:02Z INFO prdkuajirl61 operator: Retrying with yum update --exclude=linux-firmware -y
+2026-04-15T03:15:45Z INFO prdkuajirl61 yum: Update completed successfully (42 packages updated, linux-firmware excluded)
+2026-04-15T03:16:00Z INFO prdkuajirl61 systemd: Rebooting for kernel update
+2026-04-15T03:18:00Z INFO prdkuajirl61 systemd: System boot complete
+2026-04-15T03:18:05Z INFO prdkuajirl61 systemd: Starting jira.service
+2026-04-15T03:18:30Z INFO prdkuajirl61 jira: Jira DC 11.3.3 started successfully on port 8080
