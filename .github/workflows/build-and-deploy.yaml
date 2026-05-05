@@ -105,10 +105,10 @@ jobs:
         run: |
           for img in qwen3-server embedding-server rag-app ingestion; do
             if [ "${{ github.event_name }}" == "push" ] || \
-               ([ "$img" == "qwen3-server" ] && ${{ inputs.build_qwen3 }}) || \
-               ([ "$img" == "embedding-server" ] && ${{ inputs.build_embedding }}) || \
-               ([ "$img" == "rag-app" ] && ${{ inputs.build_rag }}) || \
-               ([ "$img" == "ingestion" ] && ${{ inputs.build_ingestion }}); then
+               ([ "$img" == "qwen3-server" ] && ${{ inputs.build_qwen3 || true }}) || \
+               ([ "$img" == "embedding-server" ] && ${{ inputs.build_embedding || true }}) || \
+               ([ "$img" == "rag-app" ] && ${{ inputs.build_rag || true }}) || \
+               ([ "$img" == "ingestion" ] && ${{ inputs.build_ingestion || true }}); then
               kustomize edit set image \
                 "ghcr.io/${{ github.repository_owner }}/${img}=ghcr.io/${{ github.repository_owner }}/${img}:${{ github.sha }}"
             fi
