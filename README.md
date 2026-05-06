@@ -49,16 +49,18 @@ cd ../llm-platform-poc
 vagrant up
 ```
 
-Then apply the ArgoCD application from the control node after this repository is
-available in GitHub at the URL configured in `argocd/app-dev.yaml`:
+The infrastructure Vagrant bootstrap creates the dev ArgoCD `Application`
+automatically after ArgoCD is installed. That Application points at this
+repository and syncs `deploy/overlays/dev`.
+
+If you need to recreate it manually from the control node, use:
 
 ```bash
 vagrant ssh control -c \
   'kubectl apply -f https://raw.githubusercontent.com/anasgrt/LLM-PLATFORM-POC-ARGOCD/main/argocd/app-dev.yaml'
 ```
 
-ArgoCD will sync `deploy/overlays/dev`. Production is intentionally manual-sync
-through `argocd/app-prod.yaml`.
+Production is intentionally manual-sync through `argocd/app-prod.yaml`.
 
 ## Validate Locally
 
