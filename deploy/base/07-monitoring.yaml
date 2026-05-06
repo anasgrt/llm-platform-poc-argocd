@@ -1713,7 +1713,7 @@ spec:
   ports:
     - name: metrics
       port: 8082
-      targetPort: metrics
+      targetPort: 8082
   type: ClusterIP
   clusterIP: None
 
@@ -1737,7 +1737,7 @@ spec:
   ports:
     - name: metrics
       port: 8083
-      targetPort: metrics
+      targetPort: 8083
   type: ClusterIP
   clusterIP: None
 
@@ -1761,7 +1761,7 @@ spec:
   ports:
     - name: metrics
       port: 8084
-      targetPort: metrics
+      targetPort: 8084
   type: ClusterIP
   clusterIP: None
 
@@ -1785,7 +1785,7 @@ spec:
   ports:
     - name: metrics
       port: 8080
-      targetPort: metrics
+      targetPort: 8080
   type: ClusterIP
   clusterIP: None
 
@@ -1809,7 +1809,7 @@ spec:
   ports:
     - name: metrics
       port: 9001
-      targetPort: metrics
+      targetPort: 9001
   type: ClusterIP
   clusterIP: None
 
@@ -1833,7 +1833,7 @@ spec:
   ports:
     - name: metrics
       port: 5558
-      targetPort: metrics
+      targetPort: 5558
   type: ClusterIP
   clusterIP: None
 
@@ -1847,7 +1847,7 @@ metadata:
   labels:
     app.kubernetes.io/name: grafana
     app.kubernetes.io/part-of: monitoring
-    dashboard-provider: llm-platform
+    dashboard-provider: argocd
 data:
   argocd.json: |
     {
@@ -2038,12 +2038,12 @@ data:
                 "type": "prometheus",
                 "uid": "Prometheus"
               },
-              "expr": "sum by (status_code) (rate(argocd_server_api_request_count[5m]))",
-              "legendFormat": "{{status_code}}",
+              "expr": "sum by (failed) (rate(argocd_redis_request_total{initiator=\"argocd-server\"}[5m]))",
+              "legendFormat": "failed={{failed}}",
               "refId": "A"
             }
           ],
-          "title": "ArgoCD API Request Rate",
+          "title": "ArgoCD Server Redis Request Rate",
           "type": "timeseries"
         },
         {
@@ -2301,7 +2301,7 @@ data:
                 "type": "prometheus",
                 "uid": "Prometheus"
               },
-              "expr": "histogram_quantile(0.95, sum by (le) (rate(argocd_server_api_request_duration_bucket[5m])))",
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(argocd_app_reconcile_bucket{namespace=\"argocd\"}[5m])))",
               "legendFormat": "p95",
               "refId": "A"
             },
@@ -2310,12 +2310,12 @@ data:
                 "type": "prometheus",
                 "uid": "Prometheus"
               },
-              "expr": "histogram_quantile(0.50, sum by (le) (rate(argocd_server_api_request_duration_bucket[5m])))",
+              "expr": "histogram_quantile(0.50, sum by (le) (rate(argocd_app_reconcile_bucket{namespace=\"argocd\"}[5m])))",
               "legendFormat": "p50",
               "refId": "B"
             }
           ],
-          "title": "ArgoCD API Latency",
+          "title": "Application Reconcile Latency",
           "type": "timeseries"
         },
         {
@@ -2582,12 +2582,12 @@ data:
                 "type": "prometheus",
                 "uid": "Prometheus"
               },
-              "expr": "sum by (phase) (argocd_app_info{namespace=\"argocd\"})",
+              "expr": "sum by (phase) (increase(argocd_app_sync_total{namespace=\"argocd\"}[1h]))",
               "legendFormat": "{{phase}}",
               "refId": "A"
             }
           ],
-          "title": "Application Phases",
+          "title": "Application Sync Phases (1h)",
           "type": "timeseries"
         }
       ],
