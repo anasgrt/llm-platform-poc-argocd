@@ -18,14 +18,16 @@ spec:
       labels:
         app: qwen3-server
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: llm-data
       containers:
         - name: qwen3
           # Image tag is set by the dev/prod kustomize overlay (CI bumps it).
           image: ghcr.io/anasgrt/qwen3-server
           # mmap=False loads weights into RAM once. The model lives on a
           # VirtualBox synced /vagrant mount, so on-demand paging would slow
-          # every inference. n_threads=2 leaves CPU headroom for k3s,
-          # monitoring, and the RAG workload on the 4-core data plane.
+          # every inference. The CPU request leaves scheduler headroom for
+          # k3s, monitoring, and the RAG workload on the 4-core data plane.
           args:
             - "--model"
             - "/models/Qwen3-4B-Q4_K_M.gguf"
@@ -47,7 +49,7 @@ spec:
           resources:
             requests:
               memory: 4Gi
-              cpu: "2"
+              cpu: 1500m
             limits:
               memory: 6Gi
               cpu: "4"
