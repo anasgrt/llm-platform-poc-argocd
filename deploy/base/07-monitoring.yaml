@@ -819,12 +819,12 @@ data:
                 "type": "prometheus",
                 "uid": "Prometheus"
               },
-              "expr": "count(kube_pod_status_phase{namespace=\"ai-platform\",phase=\"Running\"} == 1)",
+              "expr": "count(kube_pod_status_phase{namespace=~\"ai-platform|argocd\",phase=\"Running\"} == 1)",
               "legendFormat": "running pods",
               "refId": "A"
             }
           ],
-          "title": "AI Platform Pods Running",
+          "title": "Platform Pods Running",
           "type": "stat"
         },
         {
@@ -1095,7 +1095,7 @@ data:
                 "type": "prometheus",
                 "uid": "Prometheus"
               },
-              "expr": "sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{namespace=~\"ai-platform|monitoring|cattle-system|cattle-fleet-system|cattle-fleet-local-system|cert-manager|kube-system\",pod!=\"\",container!=\"\"}[5m]))",
+              "expr": "sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{namespace=~\"ai-platform|argocd|monitoring|cattle-system|cattle-fleet-system|cattle-fleet-local-system|cert-manager|kube-system\",pod!=\"\",container!=\"\"}[5m]))",
               "legendFormat": "{{namespace}}/{{pod}}",
               "refId": "A"
             }
@@ -1187,7 +1187,7 @@ data:
                 "type": "prometheus",
                 "uid": "Prometheus"
               },
-              "expr": "sum by (namespace, pod) (container_memory_working_set_bytes{namespace=~\"ai-platform|monitoring|cattle-system|cattle-fleet-system|cattle-fleet-local-system|cert-manager|kube-system\",pod!=\"\",container!=\"\"})",
+              "expr": "sum by (namespace, pod) (container_memory_working_set_bytes{namespace=~\"ai-platform|argocd|monitoring|cattle-system|cattle-fleet-system|cattle-fleet-local-system|cert-manager|kube-system\",pod!=\"\",container!=\"\"})",
               "legendFormat": "{{namespace}}/{{pod}}",
               "refId": "A"
             }
@@ -1250,7 +1250,7 @@ data:
                 "type": "prometheus",
                 "uid": "Prometheus"
               },
-              "expr": "sum by (namespace, pod, container) (increase(kube_pod_container_status_restarts_total{namespace=~\"ai-platform|monitoring|cattle-system|cattle-fleet-system|cattle-fleet-local-system|cert-manager|kube-system\"}[1h]))",
+              "expr": "sum by (namespace, pod, container) (increase(kube_pod_container_status_restarts_total{namespace=~\"ai-platform|argocd|monitoring|cattle-system|cattle-fleet-system|cattle-fleet-local-system|cert-manager|kube-system\"}[1h]))",
               "format": "table",
               "instant": true,
               "legendFormat": "__auto",
@@ -1329,7 +1329,7 @@ data:
                 "type": "prometheus",
                 "uid": "Prometheus"
               },
-              "expr": "kube_deployment_status_replicas_available{namespace=~\"ai-platform|monitoring|cattle-system|cattle-fleet-system|cattle-fleet-local-system|cert-manager|kube-system\"}",
+              "expr": "kube_deployment_status_replicas_available{namespace=~\"ai-platform|argocd|monitoring|cattle-system|cattle-fleet-system|cattle-fleet-local-system|cert-manager|kube-system\"}",
               "format": "table",
               "instant": true,
               "legendFormat": "__auto",
@@ -1810,30 +1810,6 @@ spec:
     - name: metrics
       port: 9001
       targetPort: 9001
-  type: ClusterIP
-  clusterIP: None
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: argocd-dex-server-metrics
-  namespace: argocd
-  labels:
-    app.kubernetes.io/name: argocd-dex-server
-    app.kubernetes.io/part-of: argocd
-    app.kubernetes.io/component: dex-server
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "5558"
-    prometheus.io/path: /metrics
-spec:
-  selector:
-    app.kubernetes.io/name: argocd-dex-server
-  ports:
-    - name: metrics
-      port: 5558
-      targetPort: 5558
   type: ClusterIP
   clusterIP: None
 
