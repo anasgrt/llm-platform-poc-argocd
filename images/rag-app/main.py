@@ -1104,7 +1104,13 @@ def ingest(records: list[dict] = Body(...)):
 
 @app.get("/health")
 def health():
-    """Health check — verifies connectivity to all backends."""
+    """Lightweight liveness/readiness probe — never blocks on downstream services."""
+    return {"rag_app": "ok", "mode": "llm" if USE_LLM else "fast_rag"}
+
+
+@app.get("/health/full")
+def health_full():
+    """Deep health check — verifies connectivity to all backends."""
     status = {"rag_app": "ok", "mode": "llm" if USE_LLM else "fast_rag"}
     checks = [
         ("qwen3", f"{QWEN3_URL}/v1/models"),
