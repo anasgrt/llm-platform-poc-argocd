@@ -25,6 +25,8 @@ spec:
           ingressClassResource:
             name: nginx
             default: true
+          admissionWebhooks:
+            enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: ingress-nginx
