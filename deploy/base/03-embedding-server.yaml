@@ -32,10 +32,10 @@ spec:
               readOnly: true
           resources:
             requests:
-              memory: 1Gi   # Model + batch encoding
-              cpu: "1"
+              memory: 1536Mi
+              cpu: 250m
             limits:
-              memory: 2Gi   # Headroom for large batches
+              memory: 3Gi
               cpu: "2"
           startupProbe:
             httpGet:

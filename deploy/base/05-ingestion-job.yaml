@@ -32,11 +32,11 @@ spec:
               readOnly: true
           resources:
             requests:
-              memory: 512Mi  # Embedding batches need memory
-              cpu: 500m
+              memory: 256Mi
+              cpu: 100m
             limits:
-              memory: 1Gi
-              cpu: "1"
+              memory: 512Mi
+              cpu: 500m
       volumes:
         - name: logs
           configMap:
