@@ -1,32 +1,44 @@
 # LLM Platform POC ArgoCD
 
 This repository owns the GitOps layer for the local LLM platform. It contains
-the Kubernetes workloads that ArgoCD syncs into the k3s cluster created by the
-Vagrant/Rancher repository.
+both the infrastructure Helm charts (cert-manager, ingress-nginx, Rancher) and
+the AI platform workloads, all managed by ArgoCD via the App of Apps pattern.
 
 The infrastructure repository is responsible for:
 
 - Vagrant and VirtualBox VM lifecycle
 - k3s control and data nodes
-- cert-manager, ingress-nginx, Rancher, and ArgoCD installation
-- local TLS secrets and hostPath model storage
+- Traefik cleanup
+- Namespaces and local TLS secrets (mkcert)
+- ArgoCD installation (the only Helm chart managed outside GitOps)
+- Applying the root App of Apps Application
 
 This repository is responsible for:
 
-- `ai-platform` workloads: Qdrant, Qwen3 server, embedding server, RAG app,
-  Fluent Bit, log retention, and sample-log ingestion
-- `monitoring` workloads: Prometheus, Grafana, node-exporter, and
+- **Platform infrastructure** (via App of Apps sync waves):
+  - cert-manager (wave 0)
+  - ingress-nginx (wave 1)
+  - Rancher (wave 2)
+- **`ai-platform` workloads** (wave 3): Qdrant, Qwen3 server, embedding server,
+  RAG app, Fluent Bit, log retention, and sample-log ingestion
+- **`monitoring` workloads** (wave 3): Prometheus, Grafana, node-exporter, and
   kube-state-metrics
 - ArgoCD `Application` manifests for dev and prod
-- image build and dev-overlay image tag updates through GitHub Actions
+- Image build and dev-overlay image tag updates through GitHub Actions
 
 ## Layout
 
 ```txt
 argocd/
-  app-dev.yaml
-  app-prod.yaml
+  root.yaml                    # Root App of Apps (applied by setup.sh)
+  app-dev.yaml                 # Standalone dev Application (manual/fallback)
+  app-prod.yaml                # Standalone prod Application (manual sync)
 deploy/
+  platform/                    # App of Apps child Applications
+    cert-manager.yaml           # sync wave 0
+    ingress-nginx.yaml          # sync wave 1
+    rancher.yaml                # sync wave 2
+    workloads-dev.yaml          # sync wave 3
   base/
     *.yaml
     sample-logs/
@@ -49,18 +61,20 @@ cd ../llm-platform-poc
 vagrant up
 ```
 
-The infrastructure Vagrant bootstrap creates the dev ArgoCD `Application`
-automatically after ArgoCD is installed. That Application points at this
-repository and syncs `deploy/overlays/dev`.
+The infrastructure Vagrant bootstrap installs ArgoCD and applies the root App of
+Apps automatically. The root Application points at `deploy/platform/` in this
+repository, which contains child Applications that install the full stack via
+sync waves.
 
-If you need to recreate it manually from the control node, use:
+If you need to recreate the root Application manually from the control node:
 
 ```bash
 vagrant ssh control -c \
-  'kubectl apply -f https://raw.githubusercontent.com/anasgrt/LLM-PLATFORM-POC-ARGOCD/main/argocd/app-dev.yaml'
+  'kubectl apply -f https://raw.githubusercontent.com/anasgrt/LLM-PLATFORM-POC-ARGOCD/main/argocd/root.yaml'
 ```
 
-Production is intentionally manual-sync through `argocd/app-prod.yaml`.
+Production workloads use a separate Application with manual sync via
+`argocd/app-prod.yaml`.
 
 ## Validate Locally
 
@@ -98,15 +112,15 @@ hook, so it runs after the API, embedding server, and Qdrant manifests sync.
 
 ## Access
 
-After ArgoCD syncs successfully:
+After ArgoCD completes all sync waves:
 
 | What | URL |
 |------|-----|
+| ArgoCD | `https://argocd.localhost:8443` |
+| Rancher | `https://rancher.localhost:8443` |
 | Chat UI | `https://chat.localhost:8443` |
 | Grafana | `https://grafana.localhost:8443` |
 | Prometheus | `https://prometheus.localhost:8443` |
-| ArgoCD | `https://argocd.localhost:8443` |
-| Rancher | `https://rancher.localhost:8443` |
 
 Test the API:
 
@@ -114,4 +128,10 @@ Test the API:
 curl -k -X POST https://chat.localhost:8443/api/analyze \
   -H 'Content-Type: application/json' \
   -d '{"question": "What errors keep recurring?"}'
+```
+
+Monitor sync progress:
+
+```bash
+kubectl get applications -n argocd
 ```
