@@ -18,10 +18,32 @@ spec:
         hostname: rancher.localhost
         bootstrapPassword: SuperAdmin@123
         replicas: 1
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: "2"
+            memory: 2Gi
         startupProbe:
-          failureThreshold: 30
+          failureThreshold: 60
           periodSeconds: 15
-          timeoutSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          failureThreshold: 10
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          failureThreshold: 10
+          periodSeconds: 30
+          timeoutSeconds: 10
+        extraNodeSelectorTerms:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+        extraTolerations:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
         ingress:
           tls:
             source: secret
