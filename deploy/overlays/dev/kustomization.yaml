@@ -9,13 +9,13 @@ resources:
 images:
 - name: ghcr.io/anasgrt/embedding-server
   newName: ghcr.io/anasgrt/embedding-server
-  newTag: 0699a681eb3af1b5934aef1bea26d63600e247bf
+  newTag: 7743e05b54b1c4b55880623d8b43ec7f2b55792f
 - name: ghcr.io/anasgrt/ingestion
   newName: ghcr.io/anasgrt/ingestion
-  newTag: 0699a681eb3af1b5934aef1bea26d63600e247bf
+  newTag: 7743e05b54b1c4b55880623d8b43ec7f2b55792f
 - name: ghcr.io/anasgrt/qwen3-server
   newName: ghcr.io/anasgrt/qwen3-server
-  newTag: 0699a681eb3af1b5934aef1bea26d63600e247bf
+  newTag: 7743e05b54b1c4b55880623d8b43ec7f2b55792f
 - name: ghcr.io/anasgrt/rag-app
   newName: ghcr.io/anasgrt/rag-app
-  newTag: 0699a681eb3af1b5934aef1bea26d63600e247bf
+  newTag: 7743e05b54b1c4b55880623d8b43ec7f2b55792f
