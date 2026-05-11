@@ -33,7 +33,7 @@ spec:
         kubernetes.io/hostname: llm-data
       containers:
         - name: qdrant
-          image: qdrant/qdrant:v1.14.0
+          image: qdrant/qdrant:v1.18.0
           ports:
             - containerPort: 6333
               name: http
