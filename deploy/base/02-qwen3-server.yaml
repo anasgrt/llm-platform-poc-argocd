@@ -51,7 +51,7 @@ spec:
               memory: 4Gi
               cpu: 500m
             limits:
-              memory: 5Gi
+              memory: 6Gi
               cpu: "4"
           # Startup probe verifies the OpenAI API is actually serving — needs HTTP.
           # Generous timeout because model load + first warmup is slow on CPU.

@@ -475,10 +475,10 @@ spec:
           resources:
             requests:
               cpu: 10m
-              memory: 16Mi
+              memory: 64Mi
             limits:
               cpu: 100m
-              memory: 64Mi
+              memory: 128Mi
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
@@ -565,10 +565,10 @@ spec:
           resources:
             requests:
               cpu: 10m
-              memory: 32Mi
+              memory: 64Mi
             limits:
               cpu: 150m
-              memory: 128Mi
+              memory: 192Mi
 ---
 apiVersion: v1
 kind: Service
@@ -1596,7 +1596,7 @@ spec:
               memory: 128Mi
             limits:
               cpu: 200m
-              memory: 384Mi
+              memory: 512Mi
           volumeMounts:
             - name: data
               mountPath: /var/lib/grafana
