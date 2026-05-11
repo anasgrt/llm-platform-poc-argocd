@@ -27,6 +27,8 @@ spec:
       labels:
         app: qdrant
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: llm-data
       containers:
         - name: qdrant
           image: qdrant/qdrant:latest

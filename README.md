@@ -8,7 +8,6 @@ The infrastructure repository is responsible for:
 
 - Vagrant and VirtualBox VM lifecycle
 - k3s control and data nodes
-- Traefik cleanup
 - Namespaces and local TLS secrets (mkcert)
 - ArgoCD installation (the only Helm chart managed outside GitOps)
 - Applying the root App of Apps Application
@@ -31,7 +30,6 @@ This repository is responsible for:
 ```txt
 argocd/
   root.yaml                    # Root App of Apps (applied by setup.sh)
-  app-dev.yaml                 # Standalone dev Application (manual/fallback)
   app-prod.yaml                # Standalone prod Application (manual sync)
 deploy/
   platform/                    # App of Apps child Applications

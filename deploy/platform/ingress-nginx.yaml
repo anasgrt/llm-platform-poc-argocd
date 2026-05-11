@@ -18,6 +18,10 @@ spec:
       valuesObject:
         controller:
           kind: DaemonSet
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
           service:
             type: NodePort
             nodePorts:

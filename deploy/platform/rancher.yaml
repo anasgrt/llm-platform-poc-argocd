@@ -18,6 +18,10 @@ spec:
         hostname: rancher.localhost
         bootstrapPassword: SuperAdmin@123
         replicas: 1
+        startupProbe:
+          failureThreshold: 30
+          periodSeconds: 15
+          timeoutSeconds: 5
         ingress:
           tls:
             source: secret

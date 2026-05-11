@@ -16,6 +16,8 @@ spec:
       labels:
         app: log-analysis-app
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: llm-data
       containers:
         - name: app
           image: ghcr.io/anasgrt/rag-app

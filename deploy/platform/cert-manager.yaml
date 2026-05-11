@@ -17,10 +17,35 @@ spec:
       valuesObject:
         crds:
           enabled: true
+        tolerations:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
+        nodeSelector:
+          node-role.kubernetes.io/control-plane: "true"
         webhook:
           replicaCount: 1
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: "true"
         cainjector:
           replicaCount: 1
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: "true"
+        startupapicheck:
+          tolerations:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+              effect: NoSchedule
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: "true"
         resources:
           requests:
             cpu: 50m
