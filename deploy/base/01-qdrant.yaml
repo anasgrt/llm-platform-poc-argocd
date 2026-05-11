@@ -33,7 +33,7 @@ spec:
         kubernetes.io/hostname: llm-data
       containers:
         - name: qdrant
-          image: qdrant/qdrant:latest
+          image: qdrant/qdrant:v1.14.0
           ports:
             - containerPort: 6333
               name: http
@@ -44,22 +44,27 @@ spec:
               mountPath: /qdrant/storage
           resources:
             requests:
-              memory: 64Mi
-              cpu: 50m
-            limits:
               memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
               cpu: 500m
-          readinessProbe:
+          startupProbe:
             httpGet:
               path: /healthz
               port: 6333
             initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 6333
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /healthz
               port: 6333
-            initialDelaySeconds: 10
             periodSeconds: 30
       volumes:
         - name: data

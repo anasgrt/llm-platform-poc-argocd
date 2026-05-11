@@ -54,11 +54,22 @@ spec:
             limits:
               memory: 512Mi
               cpu: 500m
-          readinessProbe:
+          startupProbe:
             tcpSocket:
               port: 8000
             initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 12
+          readinessProbe:
+            tcpSocket:
+              port: 8000
             periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            periodSeconds: 30
             timeoutSeconds: 3
             failureThreshold: 3
 ---
