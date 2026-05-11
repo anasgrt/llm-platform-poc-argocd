@@ -1200,8 +1200,13 @@ Examples:<br>• What errors keep recurring?<br>• Why are pods crashlooping?<b
 <script>
 const chat=document.getElementById('chat'),form=document.getElementById('form'),q=document.getElementById('q'),btn=document.getElementById('btn');
 const STORAGE_KEY='log_chat_history';
+const INPUT_HISTORY_KEY='log_input_history';
 const MAX_HISTORY=50;
+const MAX_INPUT_HISTORY=100;
 let busy=false;
+let inputHistory=JSON.parse(localStorage.getItem(INPUT_HISTORY_KEY)||'[]');
+let historyIndex=-1;
+let savedDraft='';
 
 function loadHistory(){
   try{
@@ -1276,11 +1281,26 @@ q.addEventListener('keydown',e=>{
     e.preventDefault();
     if(form.requestSubmit) form.requestSubmit(); else send(e);
   }
+  if(e.key==='ArrowUp'&&inputHistory.length){
+    e.preventDefault();
+    if(historyIndex===-1) savedDraft=q.value;
+    if(historyIndex<inputHistory.length-1) historyIndex++;
+    q.value=inputHistory[inputHistory.length-1-historyIndex];
+  }
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    if(historyIndex>0){ historyIndex--; q.value=inputHistory[inputHistory.length-1-historyIndex]; }
+    else if(historyIndex===0){ historyIndex=-1; q.value=savedDraft; }
+  }
 });
 async function send(e){
   if(e) e.preventDefault();
   if(busy)return;
   const text=q.value.trim(); if(!text)return;
+  inputHistory.push(text);
+  if(inputHistory.length>MAX_INPUT_HISTORY) inputHistory.splice(0,inputHistory.length-MAX_INPUT_HISTORY);
+  localStorage.setItem(INPUT_HISTORY_KEY,JSON.stringify(inputHistory));
+  historyIndex=-1; savedDraft='';
   busy=true; q.value=''; btn.disabled=true;
   chat.innerHTML+=`<div class="msg user">${esc(text)}</div>`;
   const bubble=document.createElement('div');
@@ -1340,6 +1360,8 @@ loadHistory();
 document.getElementById('clearBtn').addEventListener('click',()=>{
   if(!confirm('Clear chat history?')) return;
   localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(INPUT_HISTORY_KEY);
+  inputHistory=[]; historyIndex=-1; savedDraft='';
   chat.innerHTML=`<div class="msg bot">Ready. Ask me about your logs — errors, patterns, root causes, correlations.<br><br>Examples:<br>• What errors keep recurring?<br>• Why are pods crashlooping?<br>• Summarize the NGINX 5xx errors<br>• What happened around 03:14 UTC?</div>`;
 });
 </script>
