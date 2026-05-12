@@ -7,6 +7,8 @@ metadata:
     app: embedding-server
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: embedding-server
@@ -28,6 +30,12 @@ spec:
               value: "/models/all-MiniLM-L6-v2"
             - name: MODEL_CACHE
               value: "/models"
+            - name: OMP_NUM_THREADS
+              value: "1"
+            - name: MKL_NUM_THREADS
+              value: "1"
+            - name: TOKENIZERS_PARALLELISM
+              value: "false"
           volumeMounts:
             - name: cache
               mountPath: /models
@@ -35,27 +43,25 @@ spec:
           resources:
             requests:
               memory: 1536Mi
-              cpu: 250m
+              cpu: 150m
             limits:
               memory: 3Gi
-              cpu: "2"
+              cpu: 500m
           startupProbe:
-            httpGet:
-              path: /health
+            tcpSocket:
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 18
+            timeoutSeconds: 5
           readinessProbe:
-            httpGet:
-              path: /ready
+            tcpSocket:
               port: 8080
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            httpGet:
-              path: /health
+            tcpSocket:
               port: 8080
             periodSeconds: 30
             timeoutSeconds: 5

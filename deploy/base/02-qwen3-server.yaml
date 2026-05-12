@@ -26,8 +26,8 @@ spec:
           image: ghcr.io/anasgrt/qwen3-server
           # mmap=False loads weights into RAM once. The model lives on a
           # VirtualBox synced /vagrant mount, so on-demand paging would slow
-          # every inference. The CPU request leaves scheduler headroom for
-          # k3s, monitoring, and the RAG workload on the 4-core data plane.
+          # every inference. Keep this at one thread for the local 2-vCPU data
+          # node; higher values starve k3s, ArgoCD, and Rancher reconciliation.
           args:
             - "--model"
             - "/models/Qwen3-4B-Q4_K_M.gguf"
@@ -36,9 +36,9 @@ spec:
             - "--use_mlock"
             - "False"
             - "--n_threads"
-            - "4"
+            - "1"
             - "--n_threads_batch"
-            - "4"
+            - "1"
           ports:
             - containerPort: 8080
               name: http
@@ -49,10 +49,10 @@ spec:
           resources:
             requests:
               memory: 4Gi
-              cpu: 500m
+              cpu: 250m
             limits:
               memory: 6Gi
-              cpu: "4"
+              cpu: "1"
           # Startup probe verifies the OpenAI API is actually serving — needs HTTP.
           # Generous timeout because model load + first warmup is slow on CPU.
           startupProbe:
