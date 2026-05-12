@@ -10,7 +10,6 @@ resources:
   - 02-qwen3-server.yaml
   - 03-embedding-server.yaml
   - 04-rag-app.yaml
-  - 05-ingestion-job.yaml
   - 06-ingress.yaml
   - 07-monitoring.yaml
   - 08-fluent-bit.yaml
