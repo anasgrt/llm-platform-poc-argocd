@@ -83,7 +83,7 @@ already reads the same collection.
 | Component | Where | Role |
 |---|---|---|
 | Fluent Bit DaemonSet | [deploy/base/08-fluent-bit.yaml](deploy/base/08-fluent-bit.yaml) | Tails `/var/log/containers/*.log`, parses CRI format, enriches with k8s metadata, ships JSON batches over HTTP |
-| `/api/ingest` endpoint | [images/rag-app/main.py](images/rag-app/main.py) | Receives batches, normalizes records, embeds, upserts to Qdrant |
+| `/api/ingest` endpoint | [images/rag-app/app/api.py](images/rag-app/app/api.py), [images/rag-app/app/ingestion.py](images/rag-app/app/ingestion.py) | Receives batches, normalizes records, embeds, upserts to Qdrant |
 | embedding-server | [deploy/base/03-embedding-server.yaml](deploy/base/03-embedding-server.yaml) | Returns 384-dim vectors (sentence-transformers MiniLM) |
 | Qdrant | [deploy/base/01-qdrant.yaml](deploy/base/01-qdrant.yaml) | Stores vectors + payload in the `logs` collection (cosine distance) |
 

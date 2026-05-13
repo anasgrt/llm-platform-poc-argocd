@@ -10,6 +10,7 @@ RUN pip install --no-cache-dir \
     httpx==0.28.1
 
 COPY main.py /app/main.py
+COPY app /app/app
 WORKDIR /app
 EXPOSE 8000
 

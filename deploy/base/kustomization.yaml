@@ -11,7 +11,18 @@ resources:
   - 03-embedding-server.yaml
   - 04-rag-app.yaml
   - 06-ingress.yaml
-  - 07-monitoring.yaml
+  - 07-monitoring-namespace.yaml
+  - 07-prometheus-rbac.yaml
+  - 07-kube-state-metrics-rbac.yaml
+  - 07-prometheus.yaml
+  - 07-node-exporter.yaml
+  - 07-kube-state-metrics.yaml
+  - 07-grafana-provisioning.yaml
+  - 07-grafana-llm-platform-dashboard.yaml
+  - 07-grafana-runtime.yaml
+  - 07-monitoring-ingress.yaml
+  - 07-argocd-metrics-services.yaml
+  - 07-grafana-argocd-dashboard.yaml
   - 08-fluent-bit.yaml
   - 09-log-retention.yaml
 
