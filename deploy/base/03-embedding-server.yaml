@@ -1,3 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: embedding-config
+  namespace: ai-platform
+data:
+  EMBED_MODEL: "all-MiniLM-L6-v2"
+  OMP_NUM_THREADS: "1"
+  MKL_NUM_THREADS: "1"
+  TOKENIZERS_PARALLELISM: "false"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -25,17 +37,9 @@ spec:
           ports:
             - containerPort: 8080
               name: http
-          env:
-            - name: EMBED_MODEL
-              value: "/models/all-MiniLM-L6-v2"
-            - name: MODEL_CACHE
-              value: "/models"
-            - name: OMP_NUM_THREADS
-              value: "1"
-            - name: MKL_NUM_THREADS
-              value: "1"
-            - name: TOKENIZERS_PARALLELISM
-              value: "false"
+          envFrom:
+            - configMapRef:
+                name: embedding-config
           volumeMounts:
             - name: cache
               mountPath: /models
@@ -43,10 +47,10 @@ spec:
           resources:
             requests:
               memory: 1536Mi
-              cpu: 150m
+              cpu: 500m
             limits:
               memory: 3Gi
-              cpu: 500m
+              cpu: 1500m
           startupProbe:
             tcpSocket:
               port: 8080
@@ -77,6 +81,8 @@ kind: Service
 metadata:
   name: embedding-server
   namespace: ai-platform
+  labels:
+    app: embedding-server
 spec:
   selector:
     app: embedding-server
