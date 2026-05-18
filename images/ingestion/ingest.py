@@ -34,10 +34,10 @@ client = httpx.Client(timeout=60.0)
 
 def wait_for_services():
     """Block until embedding service and Qdrant are reachable."""
-    for name, url in [("Qdrant", QDRANT_URL), ("Embedding", EMBED_URL)]:
+    for name, url, path in [("Qdrant", QDRANT_URL, "/"), ("Embedding", EMBED_URL, "/ready")]:
         for attempt in range(30):
             try:
-                r = client.get(f"{url}/health" if "embed" in url.lower() else url, timeout=5)
+                r = client.get(f"{url}{path}", timeout=5)
                 if r.status_code == 200:
                     print(f"[ok] {name} is ready")
                     break
@@ -52,22 +52,28 @@ def wait_for_services():
 # ── Step 2: Create Qdrant collection ─────────────────────────────────────────
 
 def ensure_collection():
-    """Create the Qdrant collection if it doesn't exist."""
+    """Create the Qdrant collection if it doesn't exist. Skip ingestion if it already has data."""
     r = client.get(f"{QDRANT_URL}/collections/{COLLECTION}")
-    if r.status_code == 200:
-        print(f"[ok] Collection '{COLLECTION}' exists, deleting for fresh ingest...")
-        client.delete(f"{QDRANT_URL}/collections/{COLLECTION}")
-
-    client.put(
-        f"{QDRANT_URL}/collections/{COLLECTION}",
-        json={
-            "vectors": {
-                "size": VECTOR_DIM,
-                "distance": "Cosine",
-            }
-        },
-    )
-    print(f"[ok] Collection '{COLLECTION}' created ({VECTOR_DIM}-dim, cosine)")
+    if r.status_code != 200:
+        client.put(
+            f"{QDRANT_URL}/collections/{COLLECTION}",
+            json={
+                "vectors": {
+                    "size": VECTOR_DIM,
+                    "distance": "Cosine",
+                }
+            },
+        )
+        print(f"[ok] Collection '{COLLECTION}' created ({VECTOR_DIM}-dim, cosine)")
+        return False
+    else:
+        info = r.json().get("result", {})
+        points_count = info.get("points_count", 0)
+        if points_count > 0:
+            print(f"[ok] Collection '{COLLECTION}' already exists with {points_count} points — skipping static ingestion to preserve live data")
+            return True
+        print(f"[ok] Collection '{COLLECTION}' already exists but is empty — proceeding with ingestion")
+        return False
 
 
 # ── Step 3: Parse log files ──────────────────────────────────────────────────
@@ -257,7 +263,10 @@ def main():
     print("=" * 60)
 
     wait_for_services()
-    ensure_collection()
+    skip = ensure_collection()
+    if skip:
+        print("[ok] Skipping static ingestion — live data already present in collection")
+        return
 
     # Find all log files
     log_files = []

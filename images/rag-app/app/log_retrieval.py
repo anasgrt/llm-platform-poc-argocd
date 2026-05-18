@@ -211,12 +211,11 @@ def fetch_namespace_logs(namespaces: list[str], lookback: timedelta) -> list[dic
     seen: set[tuple[str, str, str]] = set()
 
     for ns in namespaces:
-        filtered = scroll_log_payloads({
+        payloads = scroll_log_payloads({
             "must": [{"key": "namespace", "match": {"value": ns}}]
         })
-        candidates = filtered + scroll_log_payloads()
 
-        for payload in candidates:
+        for payload in payloads:
             if _payload_namespace(payload).lower() not in wanted:
                 continue
             ts = _parse_timestamp(payload.get("timestamp"))

@@ -32,7 +32,6 @@ spec:
           volumeMounts:
             - name: cache
               mountPath: /models
-              readOnly: true
           resources:
             requests:
               memory: 1024Mi
@@ -41,20 +40,23 @@ spec:
               memory: 2Gi
               cpu: 1500m
           startupProbe:
-            tcpSocket:
+            httpGet:
+              path: /ready
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 10
             failureThreshold: 18
             timeoutSeconds: 5
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /ready
               port: 8080
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /health
               port: 8080
             periodSeconds: 30
             timeoutSeconds: 5

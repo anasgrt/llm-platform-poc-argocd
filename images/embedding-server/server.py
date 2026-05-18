@@ -24,7 +24,11 @@ _model_ready = threading.Event()
 
 def _load_model():
     global model
-    model = SentenceTransformer(MODEL_NAME)
+    local_path = os.path.join(CACHE_DIR, MODEL_NAME)
+    if os.path.isdir(local_path):
+        model = SentenceTransformer(local_path)
+    else:
+        model = SentenceTransformer(MODEL_NAME)
     _model_ready.set()
 
 

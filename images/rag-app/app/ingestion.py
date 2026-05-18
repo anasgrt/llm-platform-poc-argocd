@@ -1,6 +1,7 @@
 """Live log ingestion helpers for Fluent Bit or compatible shippers."""
 
 import re
+import time
 import uuid
 
 from .config import COLLECTION, EMBED_URL, QDRANT_URL, client
@@ -75,8 +76,21 @@ def ingest_records(records: list[dict]):
         return {"ingested": 0, "skipped": len(records)}
 
     texts = [p["text"] for p in parsed]
-    resp = client.post(f"{EMBED_URL}/embed", json={"texts": texts}, timeout=30.0)
-    resp.raise_for_status()
+    last_exc = None
+    for attempt in range(1, 4):
+        try:
+            resp = client.post(f"{EMBED_URL}/embed", json={"texts": texts}, timeout=30.0)
+            resp.raise_for_status()
+            break
+        except httpx.HTTPStatusError as e:
+            last_exc = e
+            if e.response.status_code == 503 and attempt < 3:
+                time.sleep(2 ** attempt)
+                continue
+            raise
+    else:
+        raise last_exc
+
     vectors = resp.json()["embeddings"]
 
     points = [
