@@ -10,6 +10,7 @@ resources:
   - 02-qwen3-server.yaml
   - 03-embedding-server.yaml
   - 04-rag-app.yaml
+  - 05-ingestion-job.yaml
   - 06-ingress.yaml
   - 07-monitoring-namespace.yaml
   - 07-prometheus-rbac.yaml
@@ -33,6 +34,29 @@ configMapGenerator:
       - sample-logs/infrastructure.log
       - sample-logs/kubernetes-pods.log
       - sample-logs/nginx-access.log
+  - name: qwen3-config
+    namespace: ai-platform
+    literals:
+      - MODEL_PATH=Qwen3-4B-Q4_K_M.gguf
+      - N_THREADS=2
+      - N_THREADS_BATCH=2
+      - N_CTX=8192
+  - name: embedding-config
+    namespace: ai-platform
+    literals:
+      - EMBED_MODEL=all-MiniLM-L6-v2
+      - OMP_NUM_THREADS=1
+      - MKL_NUM_THREADS=1
+      - TOKENIZERS_PARALLELISM=false
+  - name: rag-app-config
+    namespace: ai-platform
+    literals:
+      - COLLECTION=logs
+      - TOP_K=6
+      - MAX_CONTEXT_CHARS=1000
+      - MAX_TOKENS=300
+      - QWEN3_TIMEOUT=300
+      - USE_LLM=true
 
 generatorOptions:
   disableNameSuffixHash: true

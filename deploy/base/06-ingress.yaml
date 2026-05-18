@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: log-analysis-ingress
   namespace: ai-platform
+  labels:
+    app: log-analysis-app
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"

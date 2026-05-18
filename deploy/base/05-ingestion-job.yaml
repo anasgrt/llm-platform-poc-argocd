@@ -4,11 +4,16 @@ kind: Job
 metadata:
   name: log-ingestion
   namespace: ai-platform
+  labels:
+    app: log-ingestion
   annotations:
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
 spec:
   ttlSecondsAfterFinished: 600
+  backoffLimit: 3
+  completions: 1
+  parallelism: 1
   template:
     spec:
       restartPolicy: OnFailure
@@ -26,6 +31,8 @@ spec:
               value: "/logs"
             - name: CHUNK_SIZE
               value: "15"
+            - name: MAX_RETRIES
+              value: "3"
           volumeMounts:
             - name: logs
               mountPath: /logs

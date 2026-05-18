@@ -4,7 +4,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: qdrant-data
   namespace: ai-platform
+  labels:
+    app: qdrant
 spec:
+  storageClassName: local-path
   accessModes: [ReadWriteOnce]
   resources:
     requests:
@@ -44,11 +47,15 @@ spec:
               mountPath: /qdrant/storage
           resources:
             requests:
-              memory: 512Mi
+              memory: 576Mi
               cpu: 100m
             limits:
-              memory: 1Gi
+              memory: 1088Mi
               cpu: 500m
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "curl -X POST http://localhost:6333/collections/logs/points/delete -d '{\"points\": [1]}' || true"]
           startupProbe:
             httpGet:
               path: /healthz
@@ -76,6 +83,8 @@ kind: Service
 metadata:
   name: qdrant
   namespace: ai-platform
+  labels:
+    app: qdrant
 spec:
   selector:
     app: qdrant

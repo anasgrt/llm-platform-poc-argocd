@@ -211,7 +211,7 @@ spec:
               memory: 16Mi
             limits:
               cpu: 50m
-              memory: 64Mi
+              memory: 32Mi
           volumeMounts:
             - name: data
               mountPath: /prometheus
@@ -244,10 +244,10 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 512Mi
+              memory: 384Mi
             limits:
               cpu: 500m
-              memory: 1Gi
+              memory: 768Mi
           volumeMounts:
             - name: config
               mountPath: /etc/prometheus

@@ -1,4 +1,16 @@
 # Qwen3 4B inference server — llama-cpp-python with OpenAI-compatible API
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qwen3-config
+  namespace: ai-platform
+data:
+  MODEL_PATH: "Qwen3-4B-Q4_K_M.gguf"
+  N_THREADS: "2"
+  N_THREADS_BATCH: "2"
+  N_CTX: "8192"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,15 +42,20 @@ spec:
           # node; higher values starve k3s, ArgoCD, and Rancher reconciliation.
           args:
             - "--model"
-            - "/models/Qwen3-4B-Q4_K_M.gguf"
+            - "/models/$(MODEL_PATH)"
             - "--use_mmap"
             - "False"
             - "--use_mlock"
             - "False"
             - "--n_threads"
-            - "1"
+            - "$(N_THREADS)"
             - "--n_threads_batch"
-            - "1"
+            - "$(N_THREADS_BATCH)"
+            - "--n_ctx"
+            - "$(N_CTX)"
+          envFrom:
+            - configMapRef:
+                name: qwen3-config
           ports:
             - containerPort: 8080
               name: http
@@ -48,10 +65,10 @@ spec:
               readOnly: true
           resources:
             requests:
-              memory: 4Gi
+              memory: 3584Mi
               cpu: 250m
             limits:
-              memory: 6Gi
+              memory: 5Gi
               cpu: "1"
           # Startup probe verifies the OpenAI API is actually serving — needs HTTP.
           # Generous timeout because model load + first warmup is slow on CPU.
@@ -84,6 +101,8 @@ kind: Service
 metadata:
   name: qwen3-server
   namespace: ai-platform
+  labels:
+    app: qwen3-server
 spec:
   selector:
     app: qwen3-server
