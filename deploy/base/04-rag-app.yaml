@@ -1,17 +1,4 @@
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: rag-app-config
-  namespace: ai-platform
-data:
-  COLLECTION: "logs"
-  TOP_K: "6"
-  MAX_CONTEXT_CHARS: "1000"
-  MAX_TOKENS: "300"
-  QWEN3_TIMEOUT: "300"
-  USE_LLM: "true"
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:

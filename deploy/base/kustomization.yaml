@@ -57,6 +57,10 @@ configMapGenerator:
       - MAX_TOKENS=300
       - QWEN3_TIMEOUT=300
       - USE_LLM=true
+      - MAX_CONTEXT_CHARS=1000
+      - MAX_TOKENS=300
+      - QWEN3_TIMEOUT=300
+      - USE_LLM=true
 
 generatorOptions:
   disableNameSuffixHash: true
