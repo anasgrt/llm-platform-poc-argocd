@@ -1,15 +1,4 @@
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: embedding-config
-  namespace: ai-platform
-data:
-  EMBED_MODEL: "all-MiniLM-L6-v2"
-  OMP_NUM_THREADS: "1"
-  MKL_NUM_THREADS: "1"
-  TOKENIZERS_PARALLELISM: "false"
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:

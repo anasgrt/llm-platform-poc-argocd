@@ -1,16 +1,5 @@
 # Qwen3 4B inference server — llama-cpp-python with OpenAI-compatible API
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: qwen3-config
-  namespace: ai-platform
-data:
-  MODEL_PATH: "Qwen3-4B-Q4_K_M.gguf"
-  N_THREADS: "2"
-  N_THREADS_BATCH: "2"
-  N_CTX: "8192"
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
